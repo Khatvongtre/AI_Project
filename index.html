@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý phòng trọ</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div>
+                <h1>Quản lý phòng trọ</h1>
+                <p>Ứng dụng quản lý phòng, điện nước, thu chi và hóa đơn.</p>
+                <div class="quick-menu">
+                    <button class="menu-btn" data-tab="rooms">Phòng</button>
+                    <button class="menu-btn" data-tab="electric">Điện</button>
+                    <button class="menu-btn" data-tab="cash">Thu/Chi</button>
+                    <button class="menu-btn" data-tab="report">Báo cáo</button>
+                </div>
+            </div>
+            <div class="user-chip">Phiên bản demo</div>
+        </header>
+
+        <section class="panel panel-ghost">
+            <div class="config-grid">
+                <div><strong>Đơn giá điện mặc định</strong><input type="number" id="defaultUnitPrice" value="4000"></div>
+                <div><strong>Đơn giá nước</strong><input type="number" id="defaultWaterPrice" value="10000"></div>
+                <div><strong>Tiền dịch vụ</strong><input type="number" id="defaultService" value="500000"></div>
+                <div><button id="saveConfig" class="secondary">Lưu cấu hình</button></div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Thống kê nhanh</h2>
+            <div class="stats" id="stats"></div>
+        </section>
+
+        <section class="panel">
+<div class="toolbar tabs">
+                <button class="tab-btn active" data-tab="rooms">Phòng</button>
+                <button class="tab-btn" data-tab="electric">Điện</button>
+                <button class="tab-btn" data-tab="cash">Thu/Chi</button>
+                <button class="tab-btn" data-tab="report">Báo cáo</button>
+            </div>
+
+            <div id="rooms" class="tab-panel">
+                <div class="toolbar">
+                    <button id="addRoomBtn" class="primary">Thêm phòng</button>
+                    <button id="exportBtn" class="secondary">Xuất JSON</button>
+                    <button id="exportExcelBtn" class="secondary">Xuất Excel</button>
+                    <input type="file" id="importFile" accept="application/json" />
+                    <input type="file" id="importExcelFile" accept=".xls,.xlsx" />
+                    <button id="resetBtn" class="danger">Reset mẫu</button>
+                </div>
+                <div id="roomTableWrapper"></div>
+                <form id="roomForm" class="form-grid hidden">
+                    <h3 id="roomFormTitle">Thêm phòng</h3>
+                    <div class="grid2">
+                        <label>Phòng<input type="text" id="roomName" required /></label>
+                        <label>Trạng thái<select id="status"><option>Đã chốt</option><option>Trống</option></select></label>
+                        <label>Tiền phòng<input type="number" id="rent" value="0" required /></label>
+                        <label>Tiền dịch vụ<input type="number" id="service" value="0" required /></label>
+                        <label>Tiền nước<input type="number" id="water" value="0" required /></label>
+                        <label>Tiền điện<input type="number" id="electric" value="0" required /></label>
+                        <label>Tiền cọc<input type="number" id="deposit" value="0" required /></label>
+                        <label>Tiền đã nộp<input type="number" id="paid" value="0" required /></label>
+                        <label>Số người<input type="number" id="people" value="1" required /></label>
+                        <label>Ghi chú<input type="text" id="note" /></label>
+                    </div>
+                    <div class="actions">
+                        <button type="submit">Lưu phòng</button>
+                        <button type="button" id="cancelRoom">Hủy</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="electric" class="tab-panel hidden">
+                <div class="toolbar"><button id="addElectricBtn">Thêm chốt số</button></div>
+                <div id="electricTableWrapper"></div>
+                <form id="electricForm" class="form-grid hidden">
+                    <h3 id="electricFormTitle">Thêm chốt số</h3>
+                    <div class="grid2">
+                        <label>Tháng<input type="month" id="month" required /></label>
+                        <label>Phòng<input type="text" id="electricRoom" required /></label>
+                        <label>Số trước<input type="number" id="prev" required /></label>
+                        <label>Số sau<input type="number" id="curr" required /></label>
+                        <label>Đơn giá<input type="number" id="unitPrice" value="4000" required /></label>
+                        <label>Ghi chú<input type="text" id="electricNote" /></label>
+                        <label>Ảnh hóa đơn<input type="file" id="electricImage" accept="image/*" /></label>
+                        <div class="ground"><button type="button" id="scanElectric">Tự động từ ảnh</button></div>
+                    </div>
+                    <div class="actions"><button type="submit">Lưu chốt</button><button type="button" id="cancelElectric">Hủy</button></div>
+                </form>
+            </div>
+
+            <div id="cash" class="tab-panel hidden">
+                <div class="toolbar"><button id="addCashBtn">Thêm thu/chi</button></div>
+                <div id="cashTableWrapper"></div>
+                <form id="cashForm" class="form-grid hidden">
+                    <h3 id="cashFormTitle">Thêm thu/chi</h3>
+                    <div class="grid2">
+                        <label>Ngày<input type="date" id="cashDate" required /></label>
+                        <label>Loại<select id="cashType"><option>Thu</option><option>Chi</option></select></label>
+                        <label>Số tiền<input type="number" id="cashAmount" required /></label>
+                        <label>Phòng<input type="text" id="cashRoom" /></label>
+                        <label>Ghi chú<input type="text" id="cashNote" /></label>
+                        <label>Ảnh chứng từ<input type="file" id="cashImage" accept="image/*" /></label>
+                        <div class="ground"><button type="button" id="scanCash">Tự động từ ảnh</button></div>
+                    </div>
+                    <div class="actions"><button type="submit">Lưu</button><button type="button" id="cancelCash">Hủy</button></div>
+                </form>
+            </div>
+
+            <div id="report" class="tab-panel hidden">
+                <div id="reportContent"></div>
+            </div>
+        </section>
+    </div>
+
+    <div id="modalOverlay" class="modal-overlay hidden"> 
+      <div class="modal-card">
+        <div class="modal-header"><h3 id="modalTitle"></h3><button id="closeModal">×</button></div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <div id="invoiceModal" class="modal-overlay hidden">
+      <div class="modal-card invoice-card">
+        <div class="modal-header"><h3>Hóa đơn</h3><button id="closeInvoice">×</button></div>
+        <div id="invoiceBody" class="modal-body"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
